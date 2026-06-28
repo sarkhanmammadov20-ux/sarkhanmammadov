@@ -546,11 +546,11 @@
     });
 
     if (response.ok) {
-      status.textContent = "✅ You're on the list!";
+      status.textContent = "You're on the list!";
       form.reset();
     } else {
       const error = await response.text();
-      status.textContent = "❌ Error: " + error;
+      status.textContent = "Error: " + error;
     }
 
   } catch (err) {
