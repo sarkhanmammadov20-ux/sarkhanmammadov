@@ -412,9 +412,8 @@
           <form
             class="waitlist"
             id="waitlist"
-            action="https://example.us1.list-manage.com/subscribe/post?u=YOUR_USER_ID&amp;id=YOUR_AUDIENCE_ID"
+            action="https://93592428.sibforms.com/serve/MUIFAOPv4PD5Au6fXH2uDByNUHGQeH-Hl4rGCbRFKnGmStmUL7U94c6o23liONmqYm5QJLAvpkFkaoUA12pqr_6Wvf-EPUcp_OKYcByvwx-yLzhdhdHJr_QVW37Mj-QdZkb9IawKvvkLspkt0GTP66xEin7Ob5ygiypznqtpXByEMWKy1hN2nTU7xBz5PcXasN4klcOAuXqCGX-T3A=="
             method="post"
-            target="mailchimp-hidden-frame"
             novalidate
           >
             <input
@@ -426,10 +425,11 @@
               aria-label="Email address"
               required
             />
-            <button type="submit">Notify Me</button>
+            <input type="text" name="email_address_check" value="" tabindex="-1" autocomplete="off" aria-hidden="true" hidden />
+            <input type="hidden" name="locale" value="en" />
+            <button type="submit">Join</button>
           </form>
 
-          <iframe name="mailchimp-hidden-frame" title="Mailchimp signup" style="display: none"></iframe>
           <div class="status" id="status" role="status" aria-live="polite"></div>
         </div>
       </section>
@@ -521,30 +521,43 @@
       const form = document.getElementById("waitlist");
       const status = document.getElementById("status");
 
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
+      form.addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-        const email = form.email.value.trim();
+  const email = form.email.value.trim();
 
-        if (!email || !form.email.checkValidity()) {
-          status.textContent = "Enter a valid email address.";
-          status.classList.add("is-visible");
-          form.email.focus();
-          return;
-        }
+  if (!email || !form.email.checkValidity()) {
+    status.textContent = "Enter a valid email address.";
+    status.classList.add("is-visible");
+    form.email.focus();
+    return;
+  }
 
-        const action = form.getAttribute("action") || "";
-        const isConfigured = !action.includes("YOUR_") && !action.includes("example.");
+  status.textContent = "Joining...";
+  status.classList.add("is-visible");
 
-        status.textContent = "You're on the list. See you at launch.";
-        status.classList.add("is-visible");
+  try {
+    const response = await fetch("https://crimson-dew-23dc.sarkhanmammadov20.workers.dev/", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ email })
+    });
 
-        if (isConfigured) {
-          HTMLFormElement.prototype.submit.call(form);
-        }
+    if (response.ok) {
+      status.textContent = "✅ You're on the list!";
+      form.reset();
+    } else {
+      const error = await response.text();
+      status.textContent = "❌ Error: " + error;
+    }
 
-        form.reset();
-      });
+  } catch (err) {
+    status.textContent = "Connection failed.";
+    console.error(err);
+  }
+});
     </script>
   </body>
 </html>
